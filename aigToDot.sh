@@ -1,0 +1,1 @@
+./cmake-build-debug/aigerToDot "$1" | dot -Tpng > ./output.png
