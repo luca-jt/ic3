@@ -1,5 +1,6 @@
 #pragma once
 #include "z3++.h"
+#include <optional>
 
 struct SymbolicTransitionSystem {
   z3::expr_vector variables;
@@ -8,13 +9,14 @@ struct SymbolicTransitionSystem {
   z3::expr init;
   z3::expr bad;
 };
-typedef const SymbolicTransitionSystem &TS;
+
+typedef SymbolicTransitionSystem TS;
 typedef z3::expr_vector Cube;
 
 inline z3::context context;
 
 // returns expr where all variables are primed
-z3::expr prime(const SymbolicTransitionSystem &ts, z3::expr expr);
+z3::expr prime(const TS &ts, z3::expr expr);
 // returns conjunction of expressions in cube
 z3::expr expr(const Cube &cube);
 // returns disjunction of expressions in cubes
@@ -26,4 +28,4 @@ std::optional<Cube> SAT(const z3::expr &expr);
 SymbolicTransitionSystem parse(const std::string &filepath);
 
 // returns true if an invariant is given for ts, can be used for verifying invariants
-bool isInvariant(TS ts, const z3::expr &invariant);
+bool isInvariant(const TS &ts, const z3::expr &invariant);

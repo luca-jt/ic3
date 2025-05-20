@@ -3,12 +3,13 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <optional>
 
 extern "C" {
 #include "aiger/aiger.h"
 }
 
-z3::expr prime(const SymbolicTransitionSystem &ts, z3::expr expr) {
+z3::expr prime(const TS &ts, z3::expr expr) {
   return expr.substitute(ts.variables, ts.primedVariables);
 }
 
@@ -153,6 +154,6 @@ SymbolicTransitionSystem parse(const std::string &filepath) {
   return ts;
 }
 
-bool isInvariant(TS ts, const z3::expr &invariant) {
+bool isInvariant(const TS &ts, const z3::expr &invariant) {
   return !SAT(ts.init && !invariant) && !SAT(invariant && ts.transitions && !prime(ts, invariant));
 }
