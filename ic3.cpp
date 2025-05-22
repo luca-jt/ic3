@@ -2,16 +2,28 @@
 #include <optional>
 
 bool ic3(const TS &ts) {
-  // TODO: Implement me
+  Frames frames;
+  newFrame(frames);
+  frames[0]; //wie konvertiert man eine expr zu einem Cube???
   return true;
 }
 
 bool isInitial(const TS &ts, const Cube &cube) {
-  // TODO: Implement me
+  //die Implementierung wäre nur richtig, wenn in einem Cube nur ein State wäre
+  z3::expr_vector cubesExprs(context);
+  cubesExprs.push_back(ts.init);
+  cubesExprs.push_back(expr(cube));
+  if (SAT(z3::mk_and(cubesExprs)) != std::nullopt) {
+    return true;
+  }
+  return false;
 }
 
 std::optional<Cube> getBad(const TS &ts, const Frame &frame) {
-  // TODO: Implement me
+  z3::expr_vector cubesExprs(context);
+  cubesExprs.push_back(ts.bad);
+  cubesExprs.push_back(expr(frame));
+  return SAT(z3::mk_and(cubesExprs));
 }
 
 bool searchPathToInit(const TS &ts, Frames &frames, Cube &cti) {
@@ -35,5 +47,6 @@ bool isInductive(const TS &ts, const Frames &frames) {
 }
 
 void newFrame(Frames &frames) {
-  // TODO: Implement me
+  Frame new_frame;
+  frames.push_back(new_frame);
 }
