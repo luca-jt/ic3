@@ -1,5 +1,7 @@
 #include "ic3.h"
+#include "aigToZ3.h"
 #include <optional>
+
 
 bool ic3(const TS &ts) {
   Frames frames;
@@ -10,7 +12,7 @@ bool ic3(const TS &ts) {
 
 bool isInitial(const TS &ts, const Cube &cube) {
   //die Implementierung wäre nur richtig, wenn in einem Cube nur ein State wäre
-  z3::expr_vector cubesExprs(context);
+  Cube cubesExprs(context);
   cubesExprs.push_back(ts.init);
   cubesExprs.push_back(expr(cube));
   if (SAT(z3::mk_and(cubesExprs)) != std::nullopt) {
@@ -20,7 +22,7 @@ bool isInitial(const TS &ts, const Cube &cube) {
 }
 
 std::optional<Cube> getBad(const TS &ts, const Frame &frame) {
-  z3::expr_vector cubesExprs(context);
+  Cube cubesExprs(context);
   cubesExprs.push_back(ts.bad);
   cubesExprs.push_back(expr(frame));
   return SAT(z3::mk_and(cubesExprs));
