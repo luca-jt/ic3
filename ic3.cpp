@@ -11,6 +11,8 @@ bool ic3(const TS &ts) {
   std::vector<Frame> frames = { Frame{std::move(init_cube)} };
   std::vector<Frame> badFrames = { Frame{std::move(bad_cube)} }; // dass in c++ moven manuell gemacht werden muss ist schon echt bad
 
+  return true;
+
   while (1) {
     // checke Bedingungen von der aktuellen frame combi, falls ja return true
     // sonst suche das CTI
@@ -18,8 +20,6 @@ bool ic3(const TS &ts) {
     // checke nach relative inductiveness
     // erstelle neuen frame und bad frame mit der blocking clause -> hier generalize() verwenden?
   }
-
-  return true;
 }
 
 bool isInitial(const TS &ts, const Cube &cube) {
