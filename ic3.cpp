@@ -9,7 +9,7 @@ bool ic3(const TS &ts) {
   Cube bad_cube(context);
   bad_cube.push_back(ts.bad);
   std::vector<Frame> frames = { Frame{std::move(init_cube)} };
-  std::vector<Frame> badFrames = { Frame{std::move(bad_cube) }; // dass in c++ moven manuell gemacht werden muss ist schon echt bad
+  std::vector<Frame> badFrames = { Frame{std::move(bad_cube)} }; // dass in c++ moven manuell gemacht werden muss ist schon echt bad
 
   while (1) {
     // checke Bedingungen von der aktuellen frame combi, falls ja return true
