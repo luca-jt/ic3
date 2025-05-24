@@ -4,12 +4,16 @@
 
 
 bool ic3(const TS &ts) {
-  std::vector<Frame> frames = { Frame{~ts.bad} };
-  std::vector<Frame> badFrames = { Frame{ts.bad} };
+  if SAT(ts.init && ts.bad) return false;
+
+  std::vector<Frame> frames = { Frame{ts.init} };
+  Frame bad_frame = Frame{ts.bad};
 
   return true;
 
   while (1) {
+    frames.push_back(~frameExpr(bad_frame));
+
     // checke Bedingungen von der aktuellen frame combi, falls ja return true
     // sonst suche das CTI
     // calle searchPathToInit() wo dann das CTI in den frames geblockt wird, falls der return hier false ist, return false
@@ -37,7 +41,8 @@ std::optional<z3::expr> getPre(const TS &ts, const std::vector<Frame> &frames, c
 }
 
 z3::expr generalize(const TS &ts, const std::vector<Frame> &frames, const z3::expr &cube, int frame_index) {
-  // TODO: Implement me
+  Frame &frame = frames[frame_index];
+  frame.push_back(cube);
 }
 
 void blockCubeAtFrame(std::vector<Frame> &frames, int frame_index, const z3::expr &cube) {
