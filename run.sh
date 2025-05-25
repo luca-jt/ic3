@@ -1,4 +1,4 @@
 #! /usr/bin/bash
 
 cmake --build build
-./build/ic3 ./benchmarks/unsafe/test1.aig
+./build/ic3 ./benchmarks/unsafe/test2.aig

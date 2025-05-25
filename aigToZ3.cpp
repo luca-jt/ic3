@@ -23,16 +23,8 @@ z3::expr expr(const std::vector<Cube> &cubes) {
   return z3::mk_or(cubesExprs);
 }
 
-z3::expr frameExpr(const std::vector<z3::expr> &exprs) {
-  z3::expr_vector frameExprs(context);
-  for (const auto &e : exprs) {
-    frameExprs.push_back(e);
-  }
-  return z3::mk_or(frameExprs);
-}
-
 // returns cube that corresponds to model restricted to unprimed + stateful variables
-z3::expr getExpr(const z3::model &model) {
+Cube getCube(const z3::model &model) {
   Cube cube(context);
   for (auto i = 0; i < model.size(); i++) {
     assert(model[i].arity() == 0);  // only constants/nullary predicates
@@ -42,15 +34,15 @@ z3::expr getExpr(const z3::model &model) {
     auto literal = model.get_const_interp(model[i]).is_true() ? variable : !variable;
     cube.push_back(literal);
   }
-  return expr(cube);
+  return cube;
 }
 
-std::optional<z3::expr> SAT(const z3::expr &expr) {
+std::optional<Cube> SAT(const z3::expr &expr) {
   z3::solver z3(context);
   z3.add(expr);
   switch (z3.check()) {
     case z3::unsat:   return std::nullopt;
-    case z3::sat:     return getExpr(z3.get_model());
+    case z3::sat:     return getCube(z3.get_model());
     default: exit(0);
   }
 }
