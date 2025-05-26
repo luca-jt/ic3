@@ -66,7 +66,7 @@ bool ic3(const TS &ts);
 bool isInitial(const TS &ts, const BadFrame &cube);
 
 // returns cube in bad & frame or nullopt if no such cube exists
-std::optional<Cube> getBadInFrame(const Frame &frame, const z3::expr &bad_part);
+std::optional<Cube> getBadInFrame(const TS &ts, const Frame &frame, const z3::expr &bad_part);
 
 // returns true if counterexample (a path to init) is found
 // returns false otherwise + strengthens frames to exclude path

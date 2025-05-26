@@ -2,6 +2,7 @@
 #include "aigToZ3.h"
 #include <optional>
 #include <iostream>
+#include <cstdint>
 
 
 bool ic3(const TS &ts) {
@@ -15,7 +16,11 @@ bool ic3(const TS &ts) {
   std::vector<Frame> frames = { Frame{!ts.bad} };
   BadFrame bad_frame{ts.bad};
 
+  uint64_t iteration = 0;
   while (1) {
+    iteration++;
+    std::cout << "Iteration: " << iteration << std::endl;
+
     auto pre = ts.transitions && prime(ts, bad_frame.to_expr());
     auto cti_cube = SAT(pre && frames.back().to_expr());
 
@@ -45,7 +50,7 @@ bool searchPathToInit(const TS &ts, std::vector<Frame> &frames, BadFrame &cti) {
   auto new_bad = cti._frame[0];
 
   for (auto frame = frames.rbegin() + 1; frame != frames.rend(); frame++) { // da frames nie leer ist, ist das safe
-    auto new_bad_opt = getBadInFrame(*frame, new_bad);
+    auto new_bad_opt = getBadInFrame(ts, *frame, new_bad);
     if (!new_bad_opt) break;
     new_bad = expr(new_bad_opt.value());
 
@@ -66,7 +71,7 @@ bool isInitial(const TS &ts, const BadFrame &cube) {
   return SAT(conj).has_value();
 }
 
-std::optional<Cube> getBadInFrame(const Frame &frame, const z3::expr &bad_part) {
-  z3::expr conj = bad_part && frame.to_expr();
-  return SAT(conj);
+std::optional<Cube> getBadInFrame(const TS &ts, const Frame &frame, const z3::expr &bad_part) {
+  auto pre = ts.transitions && prime(ts, bad_part);
+  return SAT(pre && frame.to_expr());
 }
