@@ -18,16 +18,24 @@ bool ic3(const TS &ts) {
   while (1) {
     auto pre = ts.transitions && prime(ts, bad_frame.to_expr());
     auto cti_cube = SAT(pre && frames.back().to_expr());
-    if (!cti_cube) return true;
+
+    if (!cti_cube) {
+      std::cout << "Found inductive invariant:" << std::endl;
+      std::cout << expr(SAT(frames.back().to_expr()).value()) << std::endl;
+      return true;
+    }
+
     BadFrame cti{expr(cti_cube.value())};
 
-    if (searchPathToInit(ts, frames, cti)) {
-      std::cout << "CTI reaching Init:" << std::endl;
-      std::cout << cti.to_expr() << std::endl;
+    bool is_reaching_init = searchPathToInit(ts, frames, cti);
+    bad_frame.add_cti(cti);
+
+    if (is_reaching_init) {
+      std::cout << "Found CTI reaching Init starting in Bad with sequence of A's:" << std::endl;
+      std::cout << bad_frame._frame << std::endl;
       return false;
     }
 
-    bad_frame.add_cti(cti);
     frames.push_back(Frame{bad_frame});
   }
 }
