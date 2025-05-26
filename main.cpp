@@ -10,6 +10,6 @@ int main(const int argc, char const *argv[]) {
         std::getline(std::cin, filepath);
     }
     const auto ts = parse(filepath);
-    std::cout << (ic3(ts) ? "\nSAFE" : "\nUNSAFE") << std::endl;
+    std::cout << (ic3(ts) ? "SAFE" : "UNSAFE") << std::endl;
     return 0;
 }

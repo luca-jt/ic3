@@ -145,11 +145,11 @@ SymbolicTransitionSystem parse(const std::string &filepath) {
   }
   // create the transition system from the obtained aiger model
   auto ts = transitionSystemFromAiger(aig);
-#if(DEBUG)
+//#if(DEBUG)
   std::cout << "Init: " << ts.init << std::endl;
   std::cout << "Bad: " << ts.bad << std::endl;
-  std::cout << "Transitions: " << ts.transitions << std::endl;
-#endif
+  std::cout << "Transitions: " << ts.transitions << "\n" << std::endl;
+//#endif
   aiger_reset(aig);
   return ts;
 }
