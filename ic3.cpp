@@ -6,50 +6,46 @@
 bool ic3(const TS &ts) {
   if (SAT(ts.init && ts.bad)) return false;
 
-  std::vector<z3::expr> frames = { !ts.bad };
+  std::vector<Frame> frames = { Frame{!ts.bad} };
   BadFrame bad_frame{ts.bad};
 
   while (1) {
-    auto pre = ts.transitions && prime(ts, bad_frame.to_expr()); // müssen wir hier noch die ganzen geschachtelten pre-Berechnungen machen?
-    auto cti = SAT(pre && frames.back());
-    if (!cti) return true;
-    auto cti_value = cti.value();
+    auto pre = ts.transitions && prime(ts, bad_frame.to_expr());
+    auto cti_cube = SAT(pre && frames.back().to_expr());
+    if (!cti_cube) return true;
+    BadFrame cti{expr(cti_cube.value())};
 
-    if (searchPathToInit(ts, frames, cti_value)) return false;
+    if (searchPathToInit(ts, frames, cti)) return false;
 
-    bad_frame.add_cti(cti_value);
-    frames.push_back(!bad_frame.to_expr());
+    bad_frame.add_cti(cti);
+    frames.push_back(Frame{bad_frame});
   }
 }
 
-bool searchPathToInit(const TS &ts, std::vector<z3::expr> &frames, z3::expr &cti) {
+bool searchPathToInit(const TS &ts, std::vector<Frame> &frames, BadFrame &cti) {
   if (isInitial(ts, cti)) return true;
-  blockCubeAtFrame(frames.back(), cti);
+  frames.back().block_cti(cti);
 
   for (auto frame = frames.rbegin() + 1; frame != frames.rend(); frame++) { // da frames nie leer ist, ist das safe
     auto new_bad = getBadInFrame(ts, *frame);
     if (!new_bad) break;
 
-    cti = cti && new_bad.value();
+    cti.add_bad(expr(new_bad.value()));
 
     if (isInitial(ts, cti)) return true;
 
-    blockCubeAtFrame(*frame, cti);
+    frame->block_cti(cti);
   }
 
   return false;
 }
 
-bool isInitial(const TS &ts, const z3::expr &cube) {
-  z3::expr conj = ts.init && cube;
+bool isInitial(const TS &ts, const BadFrame &cube) {
+  z3::expr conj = ts.init && cube.to_expr();
   return SAT(conj).has_value();
 }
 
-std::optional<z3::expr> getBadInFrame(const TS &ts, const z3::expr &frame) {
-  z3::expr conj = ts.bad && frame;
+std::optional<Cube> getBadInFrame(const TS &ts, const Frame &frame) {
+  z3::expr conj = ts.bad && frame.to_expr();
   return SAT(conj);
-}
-
-void blockCubeAtFrame(z3::expr &frame, const z3::expr &cube) {
-  frame = frame && !cube;
 }
