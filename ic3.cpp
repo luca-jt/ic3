@@ -34,6 +34,7 @@ bool ic3(const TS &ts) {
 
     bool is_reaching_init = searchPathToInit(ts, frames, cti);
     bad_frame.add_cti(cti);
+    bad_frame = BadFrame{expr(SAT(bad_frame.to_expr()).value())};
 
     if (is_reaching_init) {
       std::cout << "Found CTI reaching Init starting in Bad with sequence of A's:" << std::endl;
@@ -61,6 +62,7 @@ bool searchPathToInit(const TS &ts, std::vector<Frame> &frames, BadFrame &cti) {
 
   for (auto frame = frames.rbegin(); frame != frames.rend(); frame++) {
     frame->block_cti(cti);
+    *frame = Frame{expr(SAT(frame->to_expr()).value())};
   }
 
   return false;
